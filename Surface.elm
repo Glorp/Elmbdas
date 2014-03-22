@@ -9,9 +9,9 @@ bnd f m = case m of
 fmap : (a -> b) -> Maybe a -> Maybe b
 fmap f m = bnd (\x -> Just (f x)) m
 
-lam = case String.uncons "λ" of Just (c, _) -> c
+lam c = c == '\\' || c == (case String.uncons "λ" of Just (l, _) -> l)
 
-seperator c = c == lam || c == '.' || c == '(' || c == ')' || white c
+seperator c = lam c || c == '.' || c == '(' || c == ')' || white c
 
 white c = c == ' ' || c == '\t' || c == '\n'
 
@@ -47,7 +47,7 @@ listToApp l =
          x :: xs -> Just (lToA x xs)
 
 readList s =
-    let readL (c, s) = if | c == lam    -> fmap (\t -> [t]) (readLam s)
+    let readL (c, s) = if | lam c       -> fmap (\t -> [t]) (readLam s)
                           | c == '('    -> bnd (\(t, s) -> fmap (\ts -> t :: ts) (readList s))
                                            (readParen s)
                           | seperator c -> Nothing
