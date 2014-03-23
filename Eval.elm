@@ -4,7 +4,7 @@ import Set
 
 import open Term
 
-data Step = L | F | A
+data Step = L | F | A | D
 
 findPath pred t = case findPath0 pred t [] of
                     Just x  -> Just (reverse x)
@@ -44,6 +44,17 @@ pathFirst t p pred current = case p of
 reducible t = case t of
                 (App (Lam _ _) _) -> True
                 _                 -> False
+
+renameDefs trm defs = foldr renameDef trm defs
+
+renameDef (Define ds dt) trm =
+    let renameD t = case t of
+                          App f a -> App (renameD f) (renameD a)
+                          Lam p b -> (if | p == ds   -> Lam p b
+                                         | otherwise -> Lam p (renameD b))
+                          Var s   -> (if | s == ds   -> dt
+                                         | otherwise -> Var s)
+    in renameD trm
 
 subst t s x = case x of
                 App f a -> App (subst t s f) (subst t s a)

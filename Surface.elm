@@ -11,7 +11,9 @@ fmap f m = bnd (\x -> Just (f x)) m
 
 lam c = c == '\\' || c == (case String.uncons "λ" of Just (l, _) -> l)
 
-seperator c = lam c || c == '.' || c == '(' || c == ')' || white c
+defStr s = s == "≝" || s == ":="
+
+seperator c = lam c || defStr (String.cons c "") || c == '.' || c == '(' || c == ')' || white c
 
 white c = c == ' ' || c == '\t' || c == '\n'
 
@@ -26,12 +28,36 @@ termstr x = case x of
               App (Lam p b) a         -> concat [pstring (Lam p b), " ", argstring a]
               App f a                 -> concat [termstr f, " ", argstring a]
               Var s                   -> s
+              Define s t              -> concat [s, " ≝ ", termstr t]
+              Undefine s              -> concat [s, " ≝ :("]
 
 argstring a = case a of
                Var s -> s
                _     -> pstring a
 
 pstring t = concat ["(", termstr t, ")"]
+
+
+readTerm s = let ws  = case readWord s of
+                         Just (a, r) -> (case readWord r of
+                                           Just (b, r2) -> (if | defStr b  -> Just (a, r2)
+                                                               | otherwise -> Nothing)
+                                           Nothing      -> Nothing)
+                         Nothing     -> Nothing
+                 defUndef = case ws of
+                              Just (a, r) -> (case trim r of
+                                                   "" -> Just (Undefine a)
+                                                   x  -> defUndef0 a x)
+                              Nothing     -> Nothing
+                 defUndef0 a r =if | undefStr r -> Just (Undefine a)
+                                   | otherwise  -> def a r
+                 undefStr s = String.startsWith ":(" s && (trim (String.dropLeft 2 s)) == ""
+                 def a r = case read r of
+                             Just t  -> Just (Define a t)
+                             Nothing -> Nothing
+             in case defUndef of
+                  Just d  -> Just d
+                  Nothing -> read s
 
 
 read : String -> Maybe Term
@@ -51,11 +77,13 @@ readList s =
                           | c == '('    -> bnd (\(t, s) -> fmap (\ts -> t :: ts) (readList s))
                                            (readParen s)
                           | seperator c -> Nothing
-                          | otherwise   -> (case readWord0 c (String.cons c s) of
-                                              (w, rest) -> fmap (\ts -> (Var w) :: ts) (readList rest))
+                          | otherwise   -> readVar (readWord0 c (String.cons c s))
     in case String.uncons (trim s) of
                Just x  -> readL x
                Nothing -> Just [] 
+
+readVar (s, rest) = if | defStr s   -> Nothing
+                       | otherwise  -> fmap (\ts -> Var s :: ts) (readList rest)
 
 readLam s = bnd (\(p, rest) -> fmap (\b -> Lam p b)
                                     (read rest))
