@@ -8,7 +8,7 @@ Instrucktiens
 
 Lambdathings that behaves mildly like [the ones for Sublime](https://github.com/Glorp/SublimeLambdas), but run in the browser because Elm is a language from the future.
 
-You're allowed to use `\` instead of `λ` if you wanna.
+Type things in input field. You're allowed to use `\` instead of `λ` if you wanna.
 
 You name things with `:=`. Like,
 
@@ -16,7 +16,7 @@ You name things with `:=`. Like,
 
 If you're doing it right it should show up with `≝` insteada `:=`. And then you have to press enter to add it to the definitions.
 
-You remove thing from definitions by naming it to sadface and pressing enter. Like,
+You remove a thing from the definitions by naming it to sadface and pressing enter. Like,
 
     0 := :(
 
