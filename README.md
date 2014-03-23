@@ -6,7 +6,7 @@ Lambdathings
 Instrucktiens
 -------------
 
-Lambdathings that behaves mildly like [the ones for Sublime](https://github.com/Glorp/SublimeLambdas), but run in the browser because Elm is a language from the future.
+Lambdathing that behaves mildly like [the ones for Sublime](https://github.com/Glorp/SublimeLambdas), but run in the browser because Elm is a language from the future.
 
 Type things in input field. You're allowed to use `\` instead of `λ` if you wanna.
 
