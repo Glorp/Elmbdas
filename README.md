@@ -16,7 +16,7 @@ You name things with `:=`. Like,
 
 If you're doing it right it should show up with `≝` insteada `:=`. And then you have to press enter to add it to the definitions.
 
-You remove a thing from the definitions by naming it to sadface and pressing enter. Like,
+You remove thing from definitions by naming it to sadface and pressing enter. Like,
 
     0 := :(
 
