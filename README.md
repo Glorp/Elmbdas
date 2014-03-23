@@ -22,4 +22,4 @@ You remove thing from definitions by naming it to sadface and pressing enter. Li
 
 (Can ACTUALLY leave out the :( if you wanna. Will still show up with sadface if you're doing it right.)
 
-Also, clearly, I don't actally know Elm plox don't look at the code.
+Also, clearly, I don't actually know Elm plox don't look at the code.
