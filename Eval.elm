@@ -2,7 +2,7 @@ module Eval where
 
 import Set
 
-import open Term
+import Term (Term, Lam, App, Var, Define, Undefine)
 
 data Step = L | F | A | D
 

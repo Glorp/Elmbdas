@@ -1,21 +1,24 @@
 import String
 import Graphics.Element as Element
 import Graphics.Input as Input
+import Graphics.Input.Field as Field
 import Keyboard as Keys
-import open Term
-import open Surface
-import open Eval
+import Term (Term, Lam, App, Var, Define, Undefine)
+import Surface
+import Eval
 
 entered = keepIf id False Keys.enter
 
 reduceN n mt = case mt of
                  Just t  -> (if | n == 0    -> [t]
-                                | otherwise -> t :: reduceN (n - 1) (reduceRename t))
+                                | otherwise -> t :: reduceN (n - 1) (Eval.reduceRename t))
                  Nothing -> []
 
-(field, content) = Input.field "λ"
+makeField s = let content = Input.input Field.noContent
+                  fi = lift (Field.field Field.defaultStyle content.handle id s) content.signal
+              in (fi, content.signal)
 
-
+(field, content) = makeField "λ"
 
 addRemoveDef trm lst = let add s t l =
                                case l of
@@ -34,11 +37,11 @@ addRemoveDef trm lst = let add s t l =
                       _                 -> lst
 
 
-termsig = lift readTerm content
+termsig = lift (Surface.readTerm . .string) content
 
 defsig = foldp addRemoveDef [] (sampleOn entered termsig)
 
-defs = lift (flow down) (lift (map (plainText . termstr)) defsig)
+defs = lift (flow down) (lift (map (plainText . Surface.termstr)) defsig)
 
 defTerm t = case t of
               Define _ _ -> True
@@ -46,12 +49,12 @@ defTerm t = case t of
               _          -> False
 
 tstr x defs = case x of
-                Just t  -> if | defTerm t -> [termstr t]
-                              | otherwise -> map termstr (reduceN 50 (Just (renameDefs t defs)))
+                Just t  -> if | defTerm t -> [Surface.termstr t]
+                              | otherwise -> map Surface.termstr (reduceN 50 (Just (Eval.renameDefs t defs)))
                 Nothing -> [":("]
 
 mtermstr x = case x of
-               Just t  -> map termstr (reduceN 100 (Just t))
+               Just t  -> map Surface.termstr (reduceN 100 (Just t))
                Nothing -> [":("]
 
 link = (constant [markdown| [ploink](https://github.com/Glorp/Elmbdas) |])

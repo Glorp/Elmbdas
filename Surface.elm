@@ -1,5 +1,5 @@
 module Surface where
-import open Term
+import Term (Term, Lam, App, Var, Define, Undefine)
 
 bnd : (a -> Maybe b) -> Maybe a -> Maybe b
 bnd f m = case m of
